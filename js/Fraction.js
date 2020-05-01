@@ -57,7 +57,6 @@ class Fraction {
 
     subtract(rhs) {
         this.numerator = this.numerator * rhs.denominator - rhs.numerator * this.denominator;
-        this.denominator = this.denominator * rhs.denominator;
         this.simplify();
     }
 
@@ -88,7 +87,13 @@ class Fraction {
         if (this.denominator == 1) {
             return this.numerator.toString();
         }
-        return Math.abs(this.numerator).toString()+ '/' + Math.abs(this.denominator).toString();
+
+        let result = '';
+        if (this.sign() < 0) {
+            result = '-';
+        }
+        result += Math.abs(this.numerator).toString()+ '/' + Math.abs(this.denominator).toString();
+        return result;
     }
 
     toLatex() {
@@ -98,6 +103,12 @@ class Fraction {
         if (this.denominator == 1) {
             return this.numerator.toString();
         }
-        return '\\frac{' + Math.abs(this.numerator).toString() + "}{" + Math.abs(this.denominator).toString() + '}';
+
+        let result = '';
+        if (this.sign() < 0) {
+            result = '-';
+        }
+        result += '\\frac{' + Math.abs(this.numerator).toString() + "}{" + Math.abs(this.denominator).toString() + '}';
+        return result;
     }
 };

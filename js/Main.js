@@ -43,4 +43,10 @@
     console.log('c = ' + a);
     a.subtract(b);
     console.log('c - b = ' + a.toString());
+
+    let eq1 = Equation.parse("2x + y - z = 10");
+    console.log(eq1);
+    console.log(eq1.toLatex());
+    eq1.divide(new Fraction(3));
+    console.log(eq1.toString())
 })();
