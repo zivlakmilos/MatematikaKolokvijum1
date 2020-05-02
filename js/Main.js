@@ -19,6 +19,11 @@
  * Main
  */
 
+function render(latex) {
+    $('#latex').empty();
+    $('#latex').html(latex);
+}
+
 (() => {
     let a = new Fraction(2, 10);
     let b = new Fraction(3, 7);
@@ -44,9 +49,20 @@
     a.subtract(b);
     console.log('c - b = ' + a.toString());
 
-    let eq1 = Equation.parse("2x + y - z = 10");
-    console.log(eq1);
-    console.log(eq1.toLatex());
-    eq1.divide(new Fraction(3));
-    console.log(eq1.toString())
+    let eq1 = Equation.parse("-x + y + z = 0");
+    let eq2 = Equation.parse("2x + y + z = 3");
+    let eq3 = Equation.parse("4x + 3y + z = 7");
+
+    let equations = [eq1, eq2, eq3];
+
+    let latex = '';
+
+    solver = new EquationSystemSolver();
+    solver.solveGaussian(equations, (str) => {
+        if (latex.length > 0) {
+            latex += '<hr />'
+        }
+        latex += str;
+        render(latex);
+    });
 })();
