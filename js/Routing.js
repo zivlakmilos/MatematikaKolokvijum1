@@ -15,32 +15,39 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class EquationSystemSolver {
-    constructor() {
-        this.result = [];
+let pages = {};
+
+pages.home = {};
+pages.home.page = document.querySelector('#home');
+
+pages.linearEquations = {};
+pages.linearEquations.page = document.querySelector('#linearEquations');
+
+pages.linearProgramming = {};
+pages.linearProgramming.page = document.querySelector('#linearProgramming');
+
+let path = '';
+
+function navigate() {
+    path = location.hash.substr(1).split('/');
+
+    let currentPage = path[0];
+
+    if (!pages.hasOwnProperty(currentPage)) {
+        if (!pages.hasOwnProperty(currentPage)) {
+            currentPage = 'home';
+        }
     }
 
-    solveGaussian(equations, callback) {
-        this.result = [];
-
-        callback(this._displayEquations(equations));
-
-        return this.result;
-    }
-
-    _displayEquations(equations) {
-        let result = '';
-        for (let i = 0; i < equations.length; i++) {
-            result += '\\[';
-            result += equations[i].toLatex();
-            if (i == 0) {
-            }
-            result += '\\]';
+    for (let page in pages) {
+        if (pages.hasOwnProperty(page)) {
+            pages[page].page.classList.remove('active');
         }
 
-        return result;
+        pages[currentPage].page.classList.add('active');
     }
+}
 
-    _solveEquation() {
-    }
-};
+navigate();
+
+window.onhashchange = navigate;

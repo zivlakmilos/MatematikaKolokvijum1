@@ -16,16 +16,111 @@
 -->
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" prefix="og: http://ogp.me/ns#">
 
 <head>
+    <link href="http://gmpg.org/xfn/11" rel="profile">
     <meta charset="utf-8">
+    <meta name="description" content="">
+    <meta name="author" content="Miloš Zivlk">
+    <meta name="description" content="" />
+    <meta property="og:description" content="" />
+    <meta property="og:title" content="Matemtiak Kolokvijum 1 | Miloš Zivlak" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="img/profile.png" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <title>Matematika Kolokvijum 1 | Miloš Zivlak</title>
-    <link href="style.css" rel="stylesheet" />
+
+    <link href="//fonts.googleapis.com/" rel="dns-prefetch">
+    <link
+        href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="theme/css/poole.css" />
+    <link rel="stylesheet" href="theme/css/hyde.css" />
+    <link rel="stylesheet" href="theme/css/syntax.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="css/main.css" />
 </head>
 
-<body>
-    <p id="latex"></p>
+<body class="theme-base-0d">
+    <div class="sidebar">
+        <div class="container sidebar-sticky">
+            <div class="sidebar-about">
+                <h1>
+                    <a href="/">
+                        <img class="profile-picture" src="img/profile.png">
+                    </a>
+                </h1>
+                <p class="lead"></p>
+                <p class="lead"></p>
+                <p></p>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="sidebar-nav-item" href="#">
+                    Početna
+                </a>
+                <a class="sidebar-nav-item" href="#linearEquations">
+                    Linearne jednačine
+                </a>
+                <a class="sidebar-nav-item" href="#linearProgramming">
+                    Linearno programiranje
+                </a>
+            </nav>
+            <p class="sidebar-copyright">&copy; <a href="http://zivlak.rs" target="_blank">Miloš Zivlak</a> 2020</p>
+        </div>
+    </div>
+
+    <div class="content container">
+        <div id="home" class="page active">
+            <h1>Matemmatika Kolokvijum</h1>
+            <hr />
+            <p>
+                Program za rešavanje zadataka sa prvog kolokvijuma iz matematike.
+                Ukoliko imate bilo kakvih pitanja, sugestija ili ste našli neku grešku pišite mi na:<br />
+                <a href="mailto:vps@zivlak.rs">vps@zivlak.rs</a>.
+            </p>
+            <p style="text-align: right;">
+                Miloš Zivlak <span style="color: red;">&hearts;</span>
+            </p>
+        </div>
+
+        <div id="linearEquations" class="page">
+            <h1>Linearne jednačine</h1>
+            <hr />
+            <div>
+                <label for="equationsProblem">Zadatak:</label>
+                <textarea id="equstionsProblem">-x+y+z=0&#10;2x+y+z=3&#10;4x+3y+z=7
+                </textarea>
+            </div>
+
+            <div>
+                <label for="equationsMethod">Metoda:</label>
+                <select id="equationsMethod">
+                    <option value="gaussian">Gausova metoda eliminacije</option>
+                    <option value="matrix">Metoda matrice</option>
+                </select>
+            </div>
+
+            <div>
+                <button id="equationsCalculate">Računaj</button>
+            </div>
+
+            <hr />
+
+            <p class="latex"></p>
+        </div>
+
+        <div id="linearProgramming" class="page">
+            <h1>Linearno programiranje</h1>
+            <hr />
+            <p>Test</p>
+        </div>
+    </div>
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
@@ -44,9 +139,8 @@
     <script src="js/Fraction.js"></script>
     <script src="js/Equation.js"></script>
     <script src="js/EquationSystemSolver.js"></script>
+    <script src="js/Routing.js"></script>
     <script src="js/Main.js"></script>
-    <script>
-    </script>
 </body>
 
 </html>
