@@ -29,7 +29,7 @@ function render(latex) {
 
 (() => {
     let latex = '';
-    equationsSolver = new EquationSystemSolver();
+    let equationsSolver = new EquationSystemSolver();
 
     $('#equationsCalculate').click(() => {
         let lines = $('#equationsProblem').val().split('\n');
@@ -43,12 +43,24 @@ function render(latex) {
         });
 
         latex = '';
-        equationsSolver.solveGaussian(equations, (str) => {
-            if (latex.length > 0) {
-                latex += '<hr />'
-            }
-            latex += str;
-        });
-        render(latex);
+
+        let method = $('#equationsMethod').val();
+        if (method == 'matrix') {
+            equationsSolver.solveMatrix(equations, (str) => {
+                if (latex.length > 0) {
+                    latex += '<hr />';
+                }
+                latex += str;
+            });
+            render(latex);
+        } else {
+            equationsSolver.solveGaussian(equations, (str) => {
+                if (latex.length > 0) {
+                    latex += '<hr />'
+                }
+                latex += str;
+            });
+            render(latex);
+        }
     });
 })();
