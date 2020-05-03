@@ -30,3 +30,7 @@ function isLetter(chr) {
 
     return false;
 }
+
+function clone(obj) {
+    return Object.assign(Object.create(Object.getPrototypeOf(obj)), obj)
+}

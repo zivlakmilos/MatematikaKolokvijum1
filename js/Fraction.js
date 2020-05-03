@@ -22,7 +22,11 @@ class Fraction {
     }
 
     sign() {
-        return ((this.numerator >= 0 && this.denominator >= 0) || (this.numerator <= 0 && this.denominator <= 0)) ? 1 : -1;
+        if ((this.numerator >= 0 && this.denominator >= 0) || (this.numerator < 0 && this.denominator < 0)) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 
     simplify() {
@@ -34,16 +38,28 @@ class Fraction {
     reciprocal() {
         let tmp = this.numerator;
         this.denominator = this.numerator;
-        this.numerator = this.denominator;
+        this.numerator = tmp;
     }
 
     multiply(rhs) {
+        if (this.numerator == 0 || rhs.denominator == 0) {
+            this.numerator = 0;
+            this.denominator = 1;
+            return;
+        }
+
         this.numerator *= rhs.numerator;
         this.denominator *= rhs.denominator;
         this.simplify();
     }
 
     divide(rhs) {
+        if (this.numerator == 0 || rhs.denominator == 0) {
+            this.numerator = 0;
+            this.denominator = 1;
+            return;
+        }
+
         this.numerator *= rhs.denominator;
         this.denominator *= rhs.numerator;
         this.simplify();
@@ -57,6 +73,7 @@ class Fraction {
 
     subtract(rhs) {
         this.numerator = this.numerator * rhs.denominator - rhs.numerator * this.denominator;
+        this.denominator = this.denominator * rhs.denominator;
         this.simplify();
     }
 
@@ -85,14 +102,19 @@ class Fraction {
             return '0';
         }
         if (this.denominator == 1) {
-            return this.numerator.toString();
+            let result = '';
+            if (this.sign() < 0) {
+                result = '-';
+            }
+            result += Math.abs(this.numerator).toString();
+            return result;
         }
 
         let result = '';
         if (this.sign() < 0) {
             result = '-';
         }
-        result += Math.abs(this.numerator).toString()+ '/' + Math.abs(this.denominator).toString();
+        result += Math.abs(this.numerator).toString() + '/' + Math.abs(this.denominator).toString();
         return result;
     }
 
@@ -101,7 +123,12 @@ class Fraction {
             return '0';
         }
         if (this.denominator == 1) {
-            return this.numerator.toString();
+            let result = '';
+            if (this.sign() < 0) {
+                result = '-';
+            }
+            result += Math.abs(this.numerator).toString();
+            return result;
         }
 
         let result = '';
@@ -110,5 +137,9 @@ class Fraction {
         }
         result += '\\frac{' + Math.abs(this.numerator).toString() + "}{" + Math.abs(this.denominator).toString() + '}';
         return result;
+    }
+
+    clone() {
+        return clone(this);
     }
 };

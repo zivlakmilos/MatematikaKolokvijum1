@@ -43,7 +43,7 @@ class Equation {
                     if (tmpStr[0] == '-') {
                         val = -1;
                     }
-                } else if (tmpStr.length != 0) {
+                } else if (tmpStr.length > 0) {
                     val = parseInt(tmpStr);
                 }
 
@@ -93,12 +93,18 @@ class Equation {
 
         for (let key in this.prefix) {
             let value = this.prefix[key];
+            if (value == 0) {
+                continue;
+            }
+
             if (value.sign() >= 0 && result.length > 0) {
                 result += '+';
             }
 
             if (Math.abs(value.numerator) != (Math.abs(value.denominator))) {
                 result += value.toString();
+            } else if (value.sign() < 0) {
+                result += '-';
             }
             result += key;
         }
@@ -114,12 +120,18 @@ class Equation {
 
         for (let key in this.prefix) {
             let value = this.prefix[key];
+            if (value == 0) {
+                continue;
+            }
+
             if (value.sign() >= 0 && result.length > 0) {
                 result += '+';
             }
 
             if (Math.abs(value.numerator) != (Math.abs(value.denominator))) {
                 result += value.toLatex();
+            } else if (value.sign() < 0) {
+                result += '-';
             }
             result += key;
         }
@@ -128,5 +140,15 @@ class Equation {
         result += this.value.toLatex();
 
         return result;
+    }
+
+    clone() {
+        let obj = new Equation();
+        for (let key in this.prefix) {
+            obj.prefix[key] = this.prefix[key].clone();
+        }
+        obj.value = this.value.clone();
+
+        return obj;
     }
 };

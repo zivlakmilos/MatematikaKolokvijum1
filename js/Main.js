@@ -22,47 +22,33 @@
 function render(latex) {
     $('.latex').empty();
     $('.latex').html(latex);
+    MathJax.texReset();
+    MathJax.typesetClear();
+    MathJax.typesetPromise();
 }
 
 (() => {
-    let a = new Fraction(2, 10);
-    let b = new Fraction(3, 7);
-
-    console.log('a = ' + a.toString());
-    a.simplify(a);
-    console.log('a = ' + a.toString());
-
-    console.log('a = ' + a.toString());
-    console.log('b = ' + b.toString());
-
-    a.multiply(b);
-    console.log('a * b = ' + a.toString());
-
-    console.log('c = ' + a);
-    a.divide(b);
-    console.log('c / b = ' + a.toString());
-
-    a.add(b);
-    console.log('a + b = ' + a.toString());
-
-    console.log('c = ' + a);
-    a.subtract(b);
-    console.log('c - b = ' + a.toString());
-
-    let eq1 = Equation.parse("-x + y + z = 0");
-    let eq2 = Equation.parse("2x + y + z = 3");
-    let eq3 = Equation.parse("4x + 3y + z = 7");
-
-    let equations = [eq1, eq2, eq3];
-
     let latex = '';
+    equationsSolver = new EquationSystemSolver();
 
-    solver = new EquationSystemSolver();
-    solver.solveGaussian(equations, (str) => {
-        if (latex.length > 0) {
-            latex += '<hr />'
-        }
-        latex += str;
+    $('#equationsCalculate').click(() => {
+        let lines = $('#equationsProblem').val().split('\n');
+        let equations = [];
+
+        $.each(lines, function (index, item) {
+            let eq = Equation.parse(item);
+            if (eq) {
+                equations.push(eq);
+            }
+        });
+
+        latex = '';
+        equationsSolver.solveGaussian(equations, (str) => {
+            if (latex.length > 0) {
+                latex += '<hr />'
+            }
+            latex += str;
+        });
         render(latex);
     });
 })();
