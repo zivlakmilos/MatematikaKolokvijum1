@@ -78,6 +78,11 @@ class Fraction {
     }
 
     calcGCD(n1, n2) {
+        if (isNaN(n1) || isNaN(n2)) {
+            console.log('error');
+            console.trace();
+            return 0;
+        }
         while (n2 != 0) {
             let tmp1 = n1;
             let tmp2 = n2;

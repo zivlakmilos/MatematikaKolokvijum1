@@ -23,6 +23,7 @@ class Equation {
 
     static parse(str) {
         str = str.replace(/\s/g,'');
+        str = str.replace('−', '-');
         let strList = str.split('=');
         if (strList.length != 2) {
             return null;

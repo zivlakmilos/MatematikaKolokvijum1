@@ -40,23 +40,29 @@ class EquationSystemSolver {
             }
 
             let pivot = equations[i].prefix[vars[i]].clone();
-            equations[i].divide(pivot);
             step += '\\[';
             step += equations[i].toLatex();
             step += '\\]';
 
             for (let j = i + 1; j < equations.length; j++) {
-                pivot = equations[j].prefix[vars[i]].clone();
+                let pivot2 = equations[j].prefix[vars[i]].clone();
+                pivot2.numerator *= -1;
+                pivot2.divide(pivot);
                 step += '\\[';
 
                 let tmp = equations[i].clone();
-                tmp.multiply(pivot);
-                equations[j].subtract(tmp);
+                tmp.multiply(pivot2);
+                equations[j].add(tmp);
                 step += equations[j].toLatex();
 
                 if (j == i + 1 && j < equations.length - 1) {
-                    pivot = equations[j].prefix[vars[j]].clone();;
-                    step += this._pivotToLatex(pivot);
+                    for (let k = j + 1; k < equations.length; k++) {
+                        let pivot = equations[j].prefix[vars[j]].clone();
+                        let pivot2 = equations[k].prefix[Object.keys(equations[j].prefix)[0]].clone();
+                        pivot2.nominator *= -1
+                        pivot2.divide(pivot);
+                        step += this._pivotToLatex(pivot2, k);
+                    }
                 }
                 step += '\\]';
             }
@@ -82,8 +88,13 @@ class EquationSystemSolver {
             result += '\\[';
             result += equations[i].toLatex();
             if (i == 0) {
-                let pivot = equations[i].prefix[Object.keys(equations[i].prefix)[0]];
-                result += this._pivotToLatex(pivot);
+                let pivot = equations[i].prefix[Object.keys(equations[i].prefix)[0]].clone();
+                for (let j = i + 1; j < equations.length; j++) {
+                    let pivot2 = equations[j].prefix[Object.keys(equations[i].prefix)[0]].clone();
+                    pivot2.numerator *= -1;
+                    pivot2.divide(pivot);
+                    result += this._pivotToLatex(pivot2, j);
+                }
             }
             result += '\\]';
         }
@@ -91,36 +102,51 @@ class EquationSystemSolver {
         return result;
     }
 
-    _pivotToLatex(pivot) {
+    _pivotToLatex(pivot, n) {
         let result = '';
 
         if (Math.abs(pivot.numerator) == Math.abs(pivot.denominator)) {
-            result += ' / \\cdot ';
+            result += ' | \\cdot ';
             if (pivot.sign() < 0) {
                 result += ' (-';
             }
-            result += pivot.denominator.toString();
+            result += Math.abs(pivot.denominator).toString();
             if (pivot.sign() < 0) {
                 result += ')';
             }
-        } else if (pivot.numerator == 1) {
-            result += ' / : ';
+        } else if (pivot.numerator == 1 || pivot.numerator == -1) {
+            result += ' | : ';
             if (pivot.sign() < 0) {
                 result += '(-';
             }
-            result += pivot.numerator.toString();
+            result += Math.abs(pivot.denominator).toString();
             if (pivot.sign() < 0) {
                 result += ')';
             }
-        } else if (pivot.denominator == 1) {
-            result += ' / \\cdot';
+        } else if (pivot.denominator == 1 || pivot.denominator == -1) {
+            result += ' | \\cdot ';
             if (pivot.sign() < 0) {
                 result += '(-';
             }
-            result += '\\frac{';
-            result += Math.abs(pivot.denominator.toString()) + '}{' + Math.abs(pivot.numerator.toString()) + '}';
+            result += Math.abs(pivot.numerator).toString();
             if (pivot.sign() < 0) {
                 result += ')';
+            }
+        } else {
+            result += ' | \\cdot';
+            if (pivot.sign() < 0) {
+                result += '(';
+            }
+            result += pivot.toLatex();
+            if (pivot.sign() < 0) {
+                result += ')';
+            }
+        }
+
+        if (result != '') {
+            result += ' + I';
+            for (let i = 0; i < n; i++) {
+                result += 'I';
             }
         }
 
@@ -195,13 +221,16 @@ class EquationSystemSolver {
             }
         }
 
-        result += ' \\implies ';
-        result += currentVar + ' = ' + '\\frac{' + equation.value.toLatex() + '}{' + equation.prefix[currentVar].toLatex() + '}';
-        result += ' \\implies \\boxed{';
-        equation.divide(equation.prefix[currentVar]);
-        result += equation.toLatex();
-        result += '}';
-        this.result[currentVar] = equation.value;
+        if (currentVar != '') {
+            result += ' \\implies ';
+            result += currentVar + ' = ' + '\\frac{' + equation.value.toLatex() + '}{' + equation.prefix[currentVar].toLatex() + '}';
+            result += ' \\implies \\boxed{';
+            let tmp = equation.prefix[currentVar].clone();
+            equation.divide(tmp);
+            result += equation.toLatex();
+            result += '}';
+            this.result[currentVar] = equation.value;
+        }
 
         return result;
     }
