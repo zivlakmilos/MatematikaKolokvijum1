@@ -22,7 +22,7 @@ class Fraction {
     }
 
     sign() {
-        if ((this.numerator >= 0 && this.denominator >= 0) || (this.numerator < 0 && this.denominator < 0)) {
+        if (this.numerator == 0 || (this.numerator >= 0 && this.denominator >= 0) || (this.numerator < 0 && this.denominator < 0)) {
             return 1;
         } else {
             return -1;
@@ -37,8 +37,8 @@ class Fraction {
 
     reciprocal() {
         let tmp = this.numerator;
-        this.denominator = this.numerator;
-        this.numerator = tmp;
+        this.numerator = this.denominator;
+        this.denominator = tmp;
     }
 
     multiply(rhs) {

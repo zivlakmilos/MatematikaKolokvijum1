@@ -124,6 +124,20 @@ class EquationSystemSolver {
         callback(step);
 
         callback(this._calculateDeterminant(a));
+        if (this.determinant == undefined) {
+            callback('Sistem nema rešenje');
+            return this.result;
+        }
+
+        callback(this._calculateAdj(a));
+
+        callback(this._solveMatrix(vars, this.determinant, this.adjA, b));
+
+        step = '';
+        for (let key in this.result) {
+            step += '\\[ \\boxed{' + key + ' = ' + this.result[key].toLatex() + '} \\]';
+        }
+        callback(step);
 
         return this.result;
     }
@@ -478,10 +492,12 @@ class EquationSystemSolver {
             }
         }
 
+        result += ' =';
         result += '\\]';
         result += '\\[';
         result += '= ';
         result += step1;
+        result += ' =';
         result += '\\]';
         result += '\\[';
         result += '= ';
@@ -492,6 +508,222 @@ class EquationSystemSolver {
             this.determinant = undefined;
         } else {
             this.determinant = determinant;
+        }
+
+        return result;
+    }
+
+    _calculateAdj(matrix) {
+        this.adjA = [];
+        let result = '';
+
+        result = '\\[';
+        result += 'ajdA = \\begin{bmatrix}'
+
+        let determinants = [];
+
+        let tmpAdj = [];
+
+        for (let i = 0; i < matrix.length; i++) {
+            this.adjA.push([]);
+            tmpAdj.push([]);
+            for (let j = 0; j < matrix[i].length; j++) {
+                this.adjA.push([]);
+                tmpAdj[i].push([]);
+
+                if ((i + j) % 2 == 0) {
+                    result += '+';
+                } else {
+                    result += '-';
+                }
+
+                let tmpK = 0;
+                for (let k = 0; k < matrix.length; k++) {
+                    if (k == i) {
+                        continue;
+                    }
+                    tmpAdj[i][j].push([]);
+                    for (let n = 0; n < matrix.length; n++) {
+                        if (n == j) {
+                            continue;
+                        }
+                        tmpAdj[i][j][tmpK].push(matrix[k][n].clone());
+                    }
+                    tmpK++;
+                }
+                result += this._matrixToLatex(tmpAdj[i][j], 'vmatrix');
+
+                let tmpRes1 = null;
+                let tmpRes2 = null;
+                for (let k = 0; k < tmpAdj[i][j].length; k++) {
+                    for (let n = 0; n < tmpAdj[i][j][k].length; n++) {
+                        if (k == n) {
+                            if (!tmpRes1) {
+                                tmpRes1 = tmpAdj[i][j][k][n].clone();
+                            } else {
+                                tmpRes1.multiply(tmpAdj[i][j][k][n].clone());
+                            }
+                        } else {
+                            if (!tmpRes2) {
+                                tmpRes2 = tmpAdj[i][j][k][n].clone();
+                            } else {
+                                tmpRes2.multiply(tmpAdj[i][j][k][n].clone());
+                            }
+                        }
+                    }
+                }
+
+                tmpRes2.numerator *= -1;
+                tmpRes1.add(tmpRes2);
+                if ((i + j) % 2 == 1) {
+                    tmpRes1.numerator *= -1;
+                }
+                this.adjA[i][j] = tmpRes1;
+
+                if (j < matrix[i].length - 1) {
+                    result += ' & ';
+                }
+            }
+            if (i < matrix.length - 1) {
+                result += ' \\\\ ';
+            }
+        }
+
+        result += '\\end{bmatrix}^T'
+        result += ' ='
+        result += '\\]';
+        result += '\\[';
+        result += '= ';
+        result += this._matrixToLatex(this.adjA);
+        result += '^T'
+        result += '= ';
+        result += '\\]';
+
+        this.adjA = this._transposeMatrix(this.adjA);
+
+        result += '\\[';
+        result += '= ';
+        result += this._matrixToLatex(this.adjA);
+        result += '\\]';
+
+        return result;
+    }
+
+    _transposeMatrix(matrix) {
+        let result = [];
+
+        for (let i = 0; i < matrix.length; i++) {
+            result.push([]);
+            for (let j = 0; j < matrix[i].length; j++) {
+                result[i][j] = matrix[j][i];
+            }
+        }
+
+        return result;
+    }
+
+    _solveMatrix(vars, determinant, adjA, b) {
+        let result = '';
+
+        determinant.reciprocal();
+
+        result = '\\[';
+        result += this._matrixToLatex(vars);
+        result += ' = ';
+        result += determinant.toLatex();
+        result += ' \\cdot ';
+        result += this._matrixToLatex(adjA);
+        result += ' \\cdot ';
+        result += this._matrixToLatex(b);
+        result += ' =';
+        result += '\\]';
+
+        result += '\\[';
+        result += '= ';
+        result += determinant.toLatex();
+        result += ' \\cdot ';
+        result += '\\begin{bmatrix}';
+
+        let res = [];
+        for (let i = 0; i < b.length; i++) {
+            res.push(null);
+            for (let j = 0; j < adjA[i].length; j++) {
+                let paretheses = false;
+                if (j > 0 && adjA[i][j].sign() > 0) {
+                    result += '+';
+                }
+                result += adjA[i][j].toLatex();
+                result += ' \\cdot ';
+                if (b[j].sign() < 0) {
+                    result += '(';
+                    paretheses = true;
+                }
+                result += b[j].toLatex();
+                if (paretheses) {
+                    result += ')';
+                }
+
+                let tmpRes = adjA[i][j].clone();
+                tmpRes.multiply(b[j]);
+
+                if (!res[i]) {
+                    res[i] = tmpRes;
+                } else {
+                    res[i].add(tmpRes);
+                }
+            }
+            if (i < b.length - 1) {
+                result += ' \\\\ ';
+            }
+        }
+        result += '\\end{bmatrix}';
+        result += '\\]';
+
+        result += '\\[';
+        result += '= ';
+        result += determinant.toLatex();
+        result += ' \\cdot ';
+        result += this._matrixToLatex(res);
+        result += ' =';
+        result += '\\]';
+
+        result += '\\[';
+        result += '= ';
+        result += determinant.toLatex();
+        result += ' \\cdot ';
+        let divider = determinant.clone();
+        divider.reciprocal();
+        result += '\\begin{bmatrix}';
+        for (let i = 0; i < res.length; i++) {
+            let paretheses = false;
+            result += res[i];
+            result += ' : ';
+            if (divider.sign() < 0) {
+                paretheses = true;
+                result += '(';
+            }
+            result += divider.toLatex();
+            if (paretheses) {
+                result += ')';
+            }
+
+            if (i < res.length - 1) {
+                result += ' \\\\ ';
+            }
+
+            res[i].multiply(determinant);
+        }
+        result += '\\end{bmatrix}';
+        result += ' =';
+        result += '\\]';
+
+        result += '\\[';
+        result += '= ';
+        result += this._matrixToLatex(res);
+        result += '\\]';
+
+        for (let i = 0; i < res.length; i++) {
+            this.result[vars[i]] = res[i];
         }
 
         return result;
