@@ -39,6 +39,7 @@ class LinearProgramminSolver {
         callback2(this._findPoints(func, conditions));
         callback2(this._findSolution(func, conditions));
         callback2(this._showResult(func));
+        this._drawAreaOfInterest(func);
 
         return this.result;
     }
@@ -254,7 +255,7 @@ class LinearProgramminSolver {
         for (let i = 0; i < conditions.length; i++) {
             for (let j = i + 1; j < conditions.length; j++) {
                 if (Object.keys(conditions[i].prefix).length < 2 && Object.keys(conditions[j].prefix).length < 2) {
-                    if (conditions[i].value.numerator == 0 && conditions[j].value.numerator == 0) {
+                    if (conditions[i].value.numerator == 0 || conditions[j].value.numerator == 0) {
                         continue;
                     }
 
@@ -616,9 +617,63 @@ class LinearProgramminSolver {
         result += this.result.coords[keys[0]].toLatex();
         result += ', ';
         result += this.result.coords[keys[1]].toLatex();
+        result += ')'
         result += '}'
         result += '\\]';
 
         return result;
+    }
+
+    _drawAreaOfInterest(func) {
+        let p = [];
+        let p0 = [null, null];
+
+        let keys = Object.keys(func.prefix);
+
+        for (let i = 0; i < this.points.length; i++) {
+            p.push([]);
+            p[i].push(this.points[i].coords[keys[0]].numerator / this.points[i].coords[keys[0]].denominator);
+            p[i].push(this.points[i].coords[keys[1]].numerator / this.points[i].coords[keys[1]].denominator);
+
+            if (i == 0) {
+                p0.push(p[i][0]);
+                p0.push(p[i][1]);
+                continue;
+            }
+
+            if (i == 0) {
+                continue;
+            }
+            if (p[i][0] < p0[0]) {
+                p0[0] = p[i][0];
+            }
+            if (p[i][0] == p0[0]) {
+                if (p[i][1] > p0[1]) {
+                    p0[1] = p[i][1];
+                }
+            }
+        }
+
+        console.log(p0);
+
+        p.sort((a, b) => {
+            console.log(a, b);
+            let left = (a[0] - p0[0]) * (b[1] - p0[1]) - (b[0] - p0[0]) * (a[1] - p0[1]);
+            if (left == 0) {
+                let distA = (p0[0] - a[0]) * (p0[0] - a[0]) + (p0[1] - a[1]) * (p0[1] - a[1]);
+                let distB = (p0[0] - b[0]) * (p0[0] - b[0]) + (p0[1] - b[1]) * (p0[1] - b[1]);
+                return distA - distB;
+            }
+
+            return left;
+        });
+
+        this.graph.create('polygon', p, {
+            withLines: false,
+            fillColor: '#ffff00',
+            vertices: {
+                visile: false,
+            },
+        });
     }
 }
