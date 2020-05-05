@@ -654,8 +654,6 @@ class LinearProgramminSolver {
             }
         }
 
-        console.log(p0);
-
         p.sort((a, b) => {
             console.log(a, b);
             let left = (a[0] - p0[0]) * (b[1] - p0[1]) - (b[0] - p0[0]) * (a[1] - p0[1]);
