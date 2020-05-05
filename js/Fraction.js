@@ -42,7 +42,7 @@ class Fraction {
     }
 
     multiply(rhs) {
-        if (this.numerator == 0 || rhs.denominator == 0) {
+        if (this.numerator == 0 || this.denominator == 0 || rhs.numerator == 0 || rhs.denominator == 0) {
             this.numerator = 0;
             this.denominator = 1;
             return;
@@ -54,7 +54,7 @@ class Fraction {
     }
 
     divide(rhs) {
-        if (this.numerator == 0 || rhs.denominator == 0) {
+        if (this.numerator == 0 || this.denominator == 0 || rhs.numerator == 0 || rhs.denominator == 0) {
             this.numerator = 0;
             this.denominator = 1;
             return;
@@ -97,7 +97,6 @@ class Fraction {
     compare(rhs) {
         let tmp1 = this.numerator * rhs.denominator;
         let tmp2 = rhs.numerator * this.denominator;
-        this.simplify();
 
         return tmp1 - tmp2;
     }
@@ -106,7 +105,7 @@ class Fraction {
         if (this.numerator == 0) {
             return '0';
         }
-        if (this.denominator == 1) {
+        if (this.denominator == 1 || this.denominator == -1) {
             let result = '';
             if (this.sign() < 0) {
                 result = '-';
@@ -127,7 +126,7 @@ class Fraction {
         if (this.numerator == 0) {
             return '0';
         }
-        if (this.denominator == 1) {
+        if (this.denominator == 1 || this.denominator == -1) {
             let result = '';
             if (this.sign() < 0) {
                 result = '-';

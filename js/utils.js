@@ -34,3 +34,8 @@ function isLetter(chr) {
 function clone(obj) {
     return Object.assign(Object.create(Object.getPrototypeOf(obj)), obj)
 }
+
+function getAlphabet(n) {
+    let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    return str[n];
+}

@@ -39,6 +39,17 @@ textarea {
   font-size: .8rem;
 }
 
+input[type=text] {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 0px, 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  font-size: .8rem;
+}
+
 select {
   width: 100%;
   padding: 16px 20px;
@@ -64,4 +75,14 @@ button, input[type=button], input[type=submit], input[type=reset] {
 
 button:hover {
   background-color:#6096ac;
+}
+
+.graph {
+  width: 100%;
+  height: 15rem;
+  display: none;
+}
+
+.graph.visible {
+  display: block;
 }
