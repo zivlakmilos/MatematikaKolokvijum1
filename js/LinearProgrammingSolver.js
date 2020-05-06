@@ -383,6 +383,10 @@ class LinearProgramminSolver {
             con2 = condition2.clone();
         }
 
+        if (!complex && con2.value.numerator == 0) {
+            return '';
+        }
+
         if (!complex && con2.prefix.hasOwnProperty(keys[0])) {
             reverse = true;
         }
@@ -421,9 +425,13 @@ class LinearProgramminSolver {
         result += '\\[';
         result += con1.toLatex();
         result += ' \\implies ';
+
         if (reverse) {
+            let tmp = con2.clone();
+            tmp.divide(con2.prefix[keys[0]].clone());
+
             let prefix = con1.prefix[keys[0]].clone();
-            prefix.multiply(con2.value);
+            prefix.multiply(tmp.value);
 
             if (con1.prefix[keys[1]].numerator != 1) {
                 result += con1.prefix[keys[1]].toLatex();
@@ -434,7 +442,7 @@ class LinearProgramminSolver {
             result += ' = ';
             result += con1.value.toLatex();
 
-            if (con1.prefix[keys[1]] != 1 || con1.prefix[keys[1]].sign() < 0) {
+            if (con1.prefix[keys[1]].numerator != 1 || con1.prefix[keys[1]].sign() < 0) {
                 result += ' \\implies ';
                 result += keys[1];
                 result += ' = ';
@@ -442,12 +450,15 @@ class LinearProgramminSolver {
                 result += ' \\implies ';
                 result += keys[1];
                 result += ' = ';
-                con1.value.divide(con1.prefix[keys[1]]);
+                con1.value.divide(con1.prefix[keys[1]].clone());
                 result += con1.value.toLatex();
             }
         } else {
+            let tmp = con2.clone();
+            tmp.divide(con2.prefix[keys[1]].clone());
+
             let prefix = con1.prefix[keys[1]].clone();
-            prefix.multiply(con2.value);
+            prefix.multiply(tmp.value);
 
             if (con1.prefix[keys[0]].numerator != 1) {
                 result += con1.prefix[keys[0]].toLatex();
@@ -460,11 +471,11 @@ class LinearProgramminSolver {
 
             if (con1.prefix[keys[0]] != 1 || con1.prefix[keys[0]].sign() < 0) {
                 result += ' \\implies ';
-                result += keys[1];
+                result += keys[0];
                 result += ' = ';
                 result += '\\frac{' + con1.value.toLatex() + '}{' + con1.prefix[keys[0]].toLatex() + '}';
                 result += ' \\implies ';
-                result += keys[1];
+                result += keys[0];
                 result += ' = ';
                 con1.value.divide(con1.prefix[keys[0]]);
                 result += con1.value.toLatex();
@@ -475,7 +486,7 @@ class LinearProgramminSolver {
         result += '\\[';
         result += con2.toLatex();
         if (reverse) {
-            if (con2.prefix[keys[0]] != 1 || con2.prefix[keys[0]].sign() < 0) {
+            if (con2.prefix[keys[0]].numerator != 1 || con2.prefix[keys[0]].sign() < 0) {
                 result += ' \\implies ';
                 result += keys[0];
                 result += ' = ';
@@ -487,7 +498,7 @@ class LinearProgramminSolver {
                 result += con2.value.toLatex();
             }
         } else {
-            if (con2.prefix[keys[1]] != 1 || con2.prefix[keys[1]].sign() < 0) {
+            if (con2.prefix[keys[1]].numerator != 1 || con2.prefix[keys[1]].sign() < 0) {
                 result += ' \\implies ';
                 result += keys[1];
                 result += ' = ';
@@ -655,7 +666,6 @@ class LinearProgramminSolver {
         }
 
         p.sort((a, b) => {
-            console.log(a, b);
             let left = (a[0] - p0[0]) * (b[1] - p0[1]) - (b[0] - p0[0]) * (a[1] - p0[1]);
             if (left == 0) {
                 let distA = (p0[0] - a[0]) * (p0[0] - a[0]) + (p0[1] - a[1]) * (p0[1] - a[1]);
