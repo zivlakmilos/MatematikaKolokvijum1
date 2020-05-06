@@ -57,11 +57,21 @@ class EquationSystemSolver {
 
                 if (j == i + 1 && j < equations.length - 1) {
                     for (let k = j + 1; k < equations.length; k++) {
-                        let pivot = equations[j].prefix[vars[j]].clone();
-                        let pivot2 = equations[k].prefix[Object.keys(equations[j].prefix)[0]].clone();
-                        pivot2.nominator *= -1
-                        pivot2.divide(pivot);
-                        step += this._pivotToLatex(pivot2, k);
+                        let pivot11 = equations[i].prefix[vars[i]].clone();
+                        let pivot12 = equations[k].prefix[vars[i]].clone();
+                        pivot12.numerator *= -1;
+                        pivot12.divide(pivot11);
+
+                        let tmpEq1 = equations[j].clone();
+                        let tmpEq2 = equations[k].clone();
+                        tmpEq1.multiply(pivot12);
+                        tmpEq2.add(tmpEq1);
+
+                        let pivot3 = tmpEq1.prefix[vars[j]].clone();
+                        let pivot4 = tmpEq2.prefix[Object.keys(tmpEq1.prefix)[0]].clone();
+                        pivot4.nominator *= -1
+                        pivot4.divide(pivot3);
+                        step += this._pivotToLatex(pivot4, k);
                     }
                 }
                 step += '\\]';
