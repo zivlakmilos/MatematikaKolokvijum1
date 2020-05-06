@@ -133,10 +133,10 @@ class LinearProgramminSolver {
                     }
                     let tmp1 = {};
                     let tmp2 = {};
-                    tmp1[keys[0]] = new Fraction(p1[0]);
-                    tmp1[keys[1]] = new Fraction(p1[1]);
-                    tmp2[keys[0]] = new Fraction(p2[0]);
-                    tmp2[keys[1]] = new Fraction(p2[1]);
+                    tmp1[keys[0]] = x1.clone();
+                    tmp1[keys[1]] = new Fraction(0);
+                    tmp2[keys[0]] = new Fraction(0);
+                    tmp2[keys[1]] = x2.clone();
                     if (!conditions[j].check(tmp1)) {
                         p1Con = false;
                     }
@@ -151,21 +151,41 @@ class LinearProgramminSolver {
                     let tmp = {};
                     tmp['name'] = getAlphabet(this.pointName);
                     tmp['coords'] = {};
-                    tmp['coords'][keys[0]] = new Fraction(p1[0]);
-                    tmp['coords'][keys[1]] = new Fraction(p1[1]);
-                    this.points.push(tmp);
-                    this.graph.create('point', p1, { name: getAlphabet(this.pointName), size: 2 });
-                    this.pointName++;
+                    tmp['coords'][keys[0]] = x1.clone();
+                    tmp['coords'][keys[1]] = new Fraction(0);
+                    let ok = true;
+                    for (let k = 0; k < this.points.length; k++) {
+                        if (tmp['coords'][keys[0]].compare(this.points[k]['coords'][keys[0]]) == 0 &&
+                            tmp['coords'][keys[1]].compare(this.points[k]['coords'][keys[1]]) == 0) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (ok) {
+                        this.points.push(tmp);
+                        this.graph.create('point', p1, { name: getAlphabet(this.pointName), size: 2 });
+                        this.pointName++;
+                    }
                 }
                 if (p2Con) {
                     let tmp = {};
                     tmp['name'] = getAlphabet(this.pointName);
                     tmp['coords'] = {};
-                    tmp['coords'][keys[0]] = new Fraction(p2[0]);
-                    tmp['coords'][keys[1]] = new Fraction(p2[1]);
-                    this.points.push(tmp);
-                    this.graph.create('point', p2, { name: getAlphabet(this.pointName), size: 2 });
-                    this.pointName++;
+                    tmp['coords'][keys[0]] = new Fraction(0);
+                    tmp['coords'][keys[1]] = x2.clone();
+                    let ok = true;
+                    for (let k = 0; k < this.points.length; k++) {
+                        if (tmp['coords'][keys[0]].compare(this.points[k]['coords'][keys[0]]) == 0 &&
+                            tmp['coords'][keys[1]].compare(this.points[k]['coords'][keys[1]]) == 0) {
+                            ok = false;
+                            break;
+                        }
+                    }
+                    if (ok) {
+                        this.points.push(tmp);
+                        this.graph.create('point', p2, { name: getAlphabet(this.pointName), size: 2 });
+                        this.pointName++;
+                    }
                 }
             } else if (lines[i].value.numerator != 0) {
                 let x = lines[i].value.clone();
@@ -188,8 +208,8 @@ class LinearProgramminSolver {
                             continue;
                         }
                         let tmp = {};
-                        tmp[keys[0]] = new Fraction(p1[0]);
-                        tmp[keys[1]] = new Fraction(p1[1]);
+                        tmp[keys[0]] = x.clone();;
+                        tmp[keys[1]] = new Fraction(0);
                         if (!conditions[j].check(tmp)) {
                             pCon = false;
                             break;
@@ -199,11 +219,21 @@ class LinearProgramminSolver {
                         let tmp = {};
                         tmp['name'] = getAlphabet(this.pointName);
                         tmp['coords'] = {};
-                        tmp['coords'][keys[0]] = new Fraction(p1[0]);
-                        tmp['coords'][keys[1]] = new Fraction(p1[1]);
-                        this.points.push(tmp);
-                        this.graph.create('point', p1, { name: getAlphabet(this.pointName), size: 2 });
-                        this.pointName++;
+                        tmp['coords'][keys[0]] = x.clone();
+                        tmp['coords'][keys[1]] = new Fraction(0);
+                        let ok = true;
+                        for (let k = 0; k < this.points.length; k++) {
+                            if (tmp['coords'][keys[0]].comp(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].comp(this.points[k]['coords'][keys[1]]) == 0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if (ok) {
+                            this.points.push(tmp);
+                            this.graph.create('point', p1, { name: getAlphabet(this.pointName), size: 2 });
+                            this.pointName++;
+                        }
                     }
                 } else {
                     if (lines[i].prefix[keys[1]].numerator != 1) {
@@ -222,8 +252,8 @@ class LinearProgramminSolver {
                             continue;
                         }
                         let tmp = {};
-                        tmp[keys[0]] = new Fraction(p1[0]);
-                        tmp[keys[1]] = new Fraction(p1[1]);
+                        tmp[keys[0]] = new Fraction(0);
+                        tmp[keys[1]] = x.clone();
                         if (!conditions[j].check(tmp)) {
                             pCon = false;
                             break;
@@ -233,11 +263,21 @@ class LinearProgramminSolver {
                         let tmp = {};
                         tmp['name'] = getAlphabet(this.pointName);
                         tmp['coords'] = {};
-                        tmp['coords'][keys[0]] = new Fraction(p1[0]);
-                        tmp['coords'][keys[1]] = new Fraction(p1[1]);
-                        this.points.push(tmp);
-                        this.graph.create('point', p1, { name: getAlphabet(this.pointName), size: 2 });
-                        this.pointName++;
+                        tmp['coords'][keys[0]] = new Fraction(0);
+                        tmp['coords'][keys[1]] = x.clone();
+                        let ok = true;
+                        for (let k = 0; k < this.points.length; k++) {
+                            if (tmp['coords'][keys[0]].comp(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].comp(this.points[k]['coords'][keys[1]]) == 0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if (ok) {
+                            this.points.push(tmp);
+                            this.graph.create('point', p1, { name: getAlphabet(this.pointName), size: 2 });
+                            this.pointName++;
+                        }
                     }
                 }
             }
@@ -305,11 +345,21 @@ class LinearProgramminSolver {
                         let tmp = {};
                         tmp['name'] = getAlphabet(this.pointName);
                         tmp['coords'] = {};
-                        tmp['coords'][keys[0]] = new Fraction(p[0]);
-                        tmp['coords'][keys[1]] = new Fraction(p[1]);
-                        this.points.push(tmp);
-                        this.graph.create('point', p, { name: getAlphabet(this.pointName), size: 2 });
-                        this.pointName++;
+                        tmp['coords'][keys[0]] = con1.value.clone();
+                        tmp['coords'][keys[1]] = con2.value.clone();
+                        ok = true;
+                        for (let k = 0; k < this.points.length; k++) {
+                            if (tmp['coords'][keys[0]].comp(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].comp(this.points[k]['coords'][keys[1]]) == 0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if (ok) {
+                            this.points.push(tmp);
+                            this.graph.create('point', p, { name: getAlphabet(this.pointName), size: 2 });
+                            this.pointName++;
+                        }
                     }
 
                     continue;
@@ -345,15 +395,28 @@ class LinearProgramminSolver {
                     }
                 }
                 if (ok) {
-                    let tmp = {};
-                    tmp['name'] = getAlphabet(this.pointName);
-                    tmp['coords'] = {};
-                    tmp['coords'][keys[0]] = new Fraction(p[0]);
-                    tmp['coords'][keys[1]] = new Fraction(p[1]);
-                    this.points.push(tmp);
-                    this.graph.create('point', p, { name: getAlphabet(this.pointName), size: 2 });
-                    result += this._solvePoint(func, conditions[i], conditions[j], getAlphabet(this.pointName));
-                    this.pointName++;
+                    let tmpRes = {};
+                    let step = this._solvePoint(func, conditions[i], conditions[j], getAlphabet(this.pointName), tmpRes);
+                    if (Object.keys(tmpRes).length > 0) {
+                        tmp['name'] = getAlphabet(this.pointName);
+                        tmp['coords'] = {};
+                        tmp['coords'][keys[0]] = tmpRes[keys[0]];
+                        tmp['coords'][keys[1]] = tmpRes[keys[1]];
+                        ok = true;
+                        for (let k = 0; k < this.points.length; k++) {
+                            if (tmp['coords'][keys[0]].compare(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].compare(this.points[k]['coords'][keys[1]]) == 0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                        if (ok) {
+                            this.points.push(tmp);
+                            this.graph.create('point', p, { name: getAlphabet(this.pointName), size: 2 });
+                            result += step;
+                            this.pointName++;
+                        }
+                    }
                 }
             }
         }
@@ -361,7 +424,7 @@ class LinearProgramminSolver {
         return result;
     }
 
-    _solvePoint(func, condition1, condition2, pointName) {
+    _solvePoint(func, condition1, condition2, pointName, res) {
         let result = '';
 
         let keys = Object.keys(func.prefix);
@@ -516,8 +579,12 @@ class LinearProgramminSolver {
         result += '\\boxed{' + pointName + '(';
         if (reverse) {
             result += con2.value.toLatex() + ', ' + con1.value.toLatex();
+            res[keys[0]] = con2.value.clone();
+            res[keys[1]] = con1.value.clone();
         } else {
             result += con1.value.toLatex() + ', ' + con2.value.toLatex();
+            res[keys[0]] = con1.value.clone();
+            res[keys[1]] = con2.value.clone();
         }
         result += ')}';
         result += '\\]';
@@ -641,10 +708,21 @@ class LinearProgramminSolver {
 
         let keys = Object.keys(func.prefix);
 
+        let boundingBox = [ -5, 0, 0, -5 ];
+
         for (let i = 0; i < this.points.length; i++) {
             p.push([]);
             p[i].push(this.points[i].coords[keys[0]].numerator / this.points[i].coords[keys[0]].denominator);
             p[i].push(this.points[i].coords[keys[1]].numerator / this.points[i].coords[keys[1]].denominator);
+
+            if (p[i][0] > boundingBox[2] * 1.25) {
+                boundingBox[0] = -p[i][0] * 0.25;
+                boundingBox[2] = p[i][0] + p[i][0] * 0.25;
+            }
+            if (p[i][1] > boundingBox[1] * 1.25) {
+                boundingBox[3] = -p[i][1] * 0.25;
+                boundingBox[1] = p[i][1] + p[i][1] * 0.25;
+            }
 
             if (i == 0) {
                 p0.push(p[i][0]);
@@ -664,6 +742,9 @@ class LinearProgramminSolver {
                 }
             }
         }
+
+        this.graph.setBoundingBox(boundingBox);
+        console.log(boundingBox);
 
         p.sort((a, b) => {
             let left = (a[0] - p0[0]) * (b[1] - p0[1]) - (b[0] - p0[0]) * (a[1] - p0[1]);

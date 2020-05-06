@@ -92,7 +92,7 @@ function renderLinearProgramming(latex, index) {
 
         $('#linearProgrammingGraph').addClass('visible');
         let graph = JXG.JSXGraph.initBoard('linearProgrammingGraph', {
-            boundingbox: [ -5, 100, 100, -10 ],
+            boundingbox: [ -5, 100, 100, -5 ],
             axis: true,
             zoom: {
                 factorX: 1.25,
