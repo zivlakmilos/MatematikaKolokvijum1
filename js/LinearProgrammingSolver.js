@@ -223,8 +223,8 @@ class LinearProgramminSolver {
                         tmp['coords'][keys[1]] = new Fraction(0);
                         let ok = true;
                         for (let k = 0; k < this.points.length; k++) {
-                            if (tmp['coords'][keys[0]].comp(this.points[k]['coords'][keys[0]]) == 0 &&
-                                tmp['coords'][keys[1]].comp(this.points[k]['coords'][keys[1]]) == 0) {
+                            if (tmp['coords'][keys[0]].compare(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].compare(this.points[k]['coords'][keys[1]]) == 0) {
                                 ok = false;
                                 break;
                             }
@@ -267,8 +267,8 @@ class LinearProgramminSolver {
                         tmp['coords'][keys[1]] = x.clone();
                         let ok = true;
                         for (let k = 0; k < this.points.length; k++) {
-                            if (tmp['coords'][keys[0]].comp(this.points[k]['coords'][keys[0]]) == 0 &&
-                                tmp['coords'][keys[1]].comp(this.points[k]['coords'][keys[1]]) == 0) {
+                            if (tmp['coords'][keys[0]].compare(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].compare(this.points[k]['coords'][keys[1]]) == 0) {
                                 ok = false;
                                 break;
                             }
@@ -349,8 +349,8 @@ class LinearProgramminSolver {
                         tmp['coords'][keys[1]] = con2.value.clone();
                         ok = true;
                         for (let k = 0; k < this.points.length; k++) {
-                            if (tmp['coords'][keys[0]].comp(this.points[k]['coords'][keys[0]]) == 0 &&
-                                tmp['coords'][keys[1]].comp(this.points[k]['coords'][keys[1]]) == 0) {
+                            if (tmp['coords'][keys[0]].compare(this.points[k]['coords'][keys[0]]) == 0 &&
+                                tmp['coords'][keys[1]].compare(this.points[k]['coords'][keys[1]]) == 0) {
                                 ok = false;
                                 break;
                             }
