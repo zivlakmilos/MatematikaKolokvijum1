@@ -744,7 +744,6 @@ class LinearProgramminSolver {
         }
 
         this.graph.setBoundingBox(boundingBox);
-        console.log(boundingBox);
 
         p.sort((a, b) => {
             let left = (a[0] - p0[0]) * (b[1] - p0[1]) - (b[0] - p0[0]) * (a[1] - p0[1]);
