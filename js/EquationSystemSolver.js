@@ -62,14 +62,14 @@ class EquationSystemSolver {
                         pivot12.numerator *= -1;
                         pivot12.divide(pivot11);
 
-                        let tmpEq1 = equations[j].clone();
+                        let tmpEq1 = equations[i].clone();
                         let tmpEq2 = equations[k].clone();
                         tmpEq1.multiply(pivot12);
                         tmpEq2.add(tmpEq1);
 
-                        let pivot3 = tmpEq1.prefix[vars[j]].clone();
-                        let pivot4 = tmpEq2.prefix[Object.keys(tmpEq1.prefix)[0]].clone();
-                        pivot4.nominator *= -1
+                        let pivot3 = equations[j].prefix[vars[j]].clone();
+                        let pivot4 = tmpEq2.prefix[vars[j]].clone();
+                        pivot4.numerator *= -1
                         pivot4.divide(pivot3);
                         step += this._pivotToLatex(pivot4, k);
                     }
