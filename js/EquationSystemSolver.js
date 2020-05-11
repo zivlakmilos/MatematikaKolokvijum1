@@ -69,7 +69,7 @@ class EquationSystemSolver {
 
                         let pivot3 = equations[j].prefix[vars[j]].clone();
                         let pivot4 = tmpEq2.prefix[vars[j]].clone();
-                        pivot4.numerator *= -1
+                        pivot4.numerator *= -1;
                         pivot4.divide(pivot3);
                         step += this._pivotToLatex(pivot4, k);
                     }
@@ -371,6 +371,7 @@ class EquationSystemSolver {
             result += this._matrixToLatex(tmp[i], 'vmatrix');
         }
 
+        result += ' =';
         result += '\\]';
         result += '\\[';
         result += '= ';
@@ -687,6 +688,7 @@ class EquationSystemSolver {
             }
         }
         result += '\\end{bmatrix}';
+        result += ' =';
         result += '\\]';
 
         result += '\\[';
