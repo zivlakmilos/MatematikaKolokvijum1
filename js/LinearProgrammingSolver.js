@@ -396,7 +396,7 @@ class LinearProgramminSolver {
                 }
                 if (ok) {
                     let tmpRes = {};
-                    let step = this._solvePoint(func, conditions[i], conditions[j], getAlphabet(this.pointName), tmpRes);
+                    let step = this._solvePoint(func, conditions, i, j, getAlphabet(this.pointName), tmpRes);
                     if (Object.keys(tmpRes).length > 0) {
                         tmp['name'] = getAlphabet(this.pointName);
                         tmp['coords'] = {};
@@ -424,8 +424,11 @@ class LinearProgramminSolver {
         return result;
     }
 
-    _solvePoint(func, condition1, condition2, pointName, res) {
+    _solvePoint(func, conditions, con1Index, con2Index, pointName, res) {
         let result = '';
+
+        let condition1 = conditions[con1Index];
+        let condition2 = conditions[con2Index];
 
         let keys = Object.keys(func.prefix);
 
@@ -433,6 +436,7 @@ class LinearProgramminSolver {
         let con1 = null;
         let con2 = null;
         let reverse = false;
+        let reverse2 = false;
 
         if (Object.keys(condition1.prefix).length >= 2 && Object.keys(condition2.prefix).length >= 2) {
             complex = true;
@@ -441,6 +445,7 @@ class LinearProgramminSolver {
         } else if (Object.keys(condition1.prefix).length == 1) {
             con1 = condition2.clone();
             con2 = condition1.clone();
+            reverse2 = true;
         } else {
             con1 = condition1.clone();
             con2 = condition2.clone();
@@ -454,6 +459,11 @@ class LinearProgramminSolver {
             reverse = true;
         }
 
+        result += '\\[';
+        result += '\\{' + pointName + '\\}\\quad ';
+        result += 'p_' + (con1Index + 1) + ' \\cap ' + 'p_' + (con2Index + 1);
+        result += '\\]';
+
         if (complex) {
             let pivot = con1.prefix[keys[0]].clone();
             pivot.divide(con2.prefix[keys[0]]);
@@ -461,6 +471,7 @@ class LinearProgramminSolver {
             pivot.reciprocal();
 
             result += '\\[';
+            result += '(p_' + (con1Index + 1) + ')\\quad ';
             result += con1.toLatex();
             result += ' / ';
             result += ' \\cdot ';
@@ -477,6 +488,7 @@ class LinearProgramminSolver {
             result += '\\]';
 
             result += '\\[';
+            result += '(p_' + (con2Index + 1) + ')\\quad ';
             result += con2.toLatex();
             result += '\\]';
 
@@ -486,6 +498,11 @@ class LinearProgramminSolver {
         }
 
         result += '\\[';
+        if (reverse2) {
+            result += '(p_' + (con2Index + 1) + ')\\quad ';
+        } else {
+            result += '(p_' + (con1Index + 1) + ')\\quad ';
+        }
         result += con1.toLatex();
         result += ' \\implies ';
 
@@ -547,6 +564,11 @@ class LinearProgramminSolver {
         result += '\\]';
 
         result += '\\[';
+        if (reverse2) {
+            result += '(p_' + (con1Index + 1) + ')\\quad ';
+        } else {
+            result += '(p_' + (con2Index + 1) + ')\\quad ';
+        }
         result += con2.toLatex();
         if (reverse) {
             if (con2.prefix[keys[0]].numerator != 1 || con2.prefix[keys[0]].sign() < 0) {
@@ -595,7 +617,6 @@ class LinearProgramminSolver {
     _findSolution(func) {
         this.result = {};
         let result = '';
-        this.result = {};
 
         let keys = Object.keys(func.prefix);
 
@@ -619,7 +640,9 @@ class LinearProgramminSolver {
         for (let i = 0; i < this.points.length; i++) {
             let z = func.calc(this.points[i].coords);
 
-            result += this.points[i].name + ')';
+            result += '\\[';
+            result += '\\{' + this.points[i].name + '\\}';
+            result += '\\]';
 
             result += '\\[';
             result += func.toLatex();
@@ -627,8 +650,12 @@ class LinearProgramminSolver {
 
             result += '\\[';
             result += func.name;
+            result += '_{' + this.points[i].name + '}';
             result += ' = ';
-            let step = '\\[' + func.name + ' = ';
+            let step = '\\[';
+            step += func.name;
+            step += '_{' + this.points[i].name + '}';
+            step += ' = ';
             for (let j = 0; j < keys.length; j++) {
                 let prefix = func.prefix[keys[j]].clone();
                 if (prefix.numerator == 1 && prefix.sign() > 0) {
@@ -660,6 +687,7 @@ class LinearProgramminSolver {
                 result += '\\boxed{';
             }
             result += func.name;
+            result += '_{' + this.points[i].name + '}';
             result += ' = ';
             result += z.toLatex();
             if (box) {

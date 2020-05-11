@@ -107,10 +107,14 @@ class Function {
         return result;
     }
 
-    toLatex() {
+    toLatex(point = null) {
         let result = '';
 
-        result += this.name + '=';
+        result += this.name;
+        if (point) {
+            result += '_{' + point + '}';
+        }
+        result += ' = ';
         let first = true;
         for (let key in this.prefix) {
             let value = this.prefix[key];
