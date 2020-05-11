@@ -176,7 +176,7 @@ class EquationSystemSolver {
         let result = '';
 
         if (Math.abs(pivot.numerator) == Math.abs(pivot.denominator)) {
-            result += ' | \\cdot ';
+            result += '\\quad / \\cdot ';
             if (pivot.sign() < 0) {
                 result += ' (-';
             }
@@ -185,7 +185,7 @@ class EquationSystemSolver {
                 result += ')';
             }
         } else if (pivot.numerator == 1 || pivot.numerator == -1) {
-            result += ' | : ';
+            result += '\\quad / : ';
             if (pivot.sign() < 0) {
                 result += '(-';
             }
@@ -194,7 +194,7 @@ class EquationSystemSolver {
                 result += ')';
             }
         } else if (pivot.denominator == 1 || pivot.denominator == -1) {
-            result += ' | \\cdot ';
+            result += '\\quad / \\cdot ';
             if (pivot.sign() < 0) {
                 result += '(-';
             }
@@ -203,7 +203,7 @@ class EquationSystemSolver {
                 result += ')';
             }
         } else {
-            result += ' | \\cdot';
+            result += '\\quad / \\cdot';
             if (pivot.sign() < 0) {
                 result += '(';
             }
