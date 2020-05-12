@@ -146,7 +146,7 @@ class Function {
     }
 
     clone() {
-        let obj = new Equation();
+        let obj = new Condition();
         for (let key in this.prefix) {
             obj.prefix[key] = this.prefix[key].clone();
         }

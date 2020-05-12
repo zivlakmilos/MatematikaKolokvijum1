@@ -192,7 +192,8 @@ class Condition {
             } else if (value.sign() < 0) {
                 result += '-';
             }
-            if (key.length > 0) {
+
+            if (key.length > 1) {
                 result += key[0];
                 result += '_{';
                 result += key.substr(1);
@@ -217,11 +218,12 @@ class Condition {
     }
 
     clone() {
-        let obj = new Equation();
+        let obj = new Condition();
         for (let key in this.prefix) {
             obj.prefix[key] = this.prefix[key].clone();
         }
         obj.value = this.value.clone();
+        obj.condition = this.condition;
 
         return obj;
     }

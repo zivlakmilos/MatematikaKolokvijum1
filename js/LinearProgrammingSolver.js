@@ -81,6 +81,8 @@ class LinearProgramminSolver {
 
         this.pointName = 0;
 
+        let boundingBox = [-5, 0, 0, -5];
+
         let ok = true;
         for (let i = 0; i < conditions.length; i++) {
             let tmp = {};
@@ -105,14 +107,10 @@ class LinearProgramminSolver {
         }
 
         for (let i = 0; i < conditions.length; i++) {
-            result += '\\[';
-            result += conditions[i].toLatex(true);
             lines.push(conditions[i].clone());
             if (Object.keys(conditions[i].prefix).length > 1 && conditions[i].value.numerator != 0) {
-                result += ' \\implies ';
                 let divider = lines[i].value.clone();
                 lines[i].divide(divider);
-                result += lines[i].toLatex(true);
 
                 let x1 = lines[i].prefix[keys[0]].clone();
                 let x2 = lines[i].prefix[keys[1]].clone();
@@ -123,6 +121,14 @@ class LinearProgramminSolver {
                 let valX2 = x2.numerator / x2.denominator;
                 let p1 = [valX1, 0];
                 let p2 = [0, valX2];
+                if (p1[0] > boundingBox[2]) {
+                    boundingBox[0] = -p1[0] * 0.25;
+                    boundingBox[2] = p1[0] + p1[0] * 0.25;
+                }
+                if (p2[1] > boundingBox[1]) {
+                    boundingBox[3] = -p2[1] * 0.25;
+                    boundingBox[1] = p2[1] + p2[1] * 0.25;
+                }
                 this.graph.create('line', [p1, p2], { strokeColor: '#0000ff', strokeWidth: 2 });
 
                 let p1Con = true;
@@ -193,14 +199,20 @@ class LinearProgramminSolver {
 
                 if (lines[i].prefix.hasOwnProperty(keys[0])) {
                     if (lines[i].prefix[keys[0]].numerator != 1) {
-                        result += ' \\implies ';
                         let divider = lines[i].previx[keys[0]].clone();
                         lines[i].divide(divider);
-                        result += lines[i].toLatex(true);
                     }
 
                     let p1 = [valX, 0];
                     let p2 = [valX, 1];
+                    if (p1[0] > boundingBox[2]) {
+                        boundingBox[0] = -p1[0] * 0.25;
+                        boundingBox[2] = p1[0] + p1[0] * 0.25;
+                    }
+                    if (p2[0] > boundingBox[2]) {
+                        boundingBox[0] = -p2[0] * 0.25;
+                        boundingBox[2] = p2[0] + p2[0] * 0.25;
+                    }
                     this.graph.create('line', [p1, p2], { name: 'a', strokeColor: '#0000ff', strokeWidth: 2 });
                     let pCon = true;
                     for (let j = 0; j < conditions.length; j++) {
@@ -237,14 +249,20 @@ class LinearProgramminSolver {
                     }
                 } else {
                     if (lines[i].prefix[keys[1]].numerator != 1) {
-                        result += ' \\implies ';
-                        let divider = lines[i].previx[keys[1]].clone();
+                        let divider = lines[i].prefix[keys[1]].clone();
                         lines[i].divide(divider);
-                        result += lines[i].toLatex(true);
                     }
 
                     let p1 = [0, valX];
                     let p2 = [1, valX];
+                    if (p1[1] > boundingBox[1]) {
+                        boundingBox[3] = -p1[1] * 0.25;
+                        boundingBox[1] = p1[1] + p1[1] * 0.25;
+                    }
+                    if (p2[1] > boundingBox[1]) {
+                        boundingBox[3] = -p2[1] * 0.25;
+                        boundingBox[1] = p2[1] + p2[1] * 0.25;
+                    }
                     this.graph.create('line', [p1, p2], { name: 'a', strokeColor: '#0000ff', strokeWidth: 2 });
                     let pCon = true;
                     for (let j = 0; j < conditions.length; j++) {
@@ -281,7 +299,154 @@ class LinearProgramminSolver {
                     }
                 }
             }
+
+            let step = this._calculateLine(conditions[i], i);
+            if (step.length > 0) {
+                result += step;
+                if (i < conditions.length - 3) {
+                    result += '<hr />';
+                }
+            }
+        }
+
+        this.graph.setBoundingBox(boundingBox);
+
+        return result;
+    }
+
+    _calculateLine(condition, conIndex) {
+        let result = '';
+
+        let con = condition.clone();
+
+        let keys = Object.keys(con.prefix);
+
+        if (keys.length == 1) {
+            if (con.prefix[keys[0]].compare(new Fraction(1)) == 0) {
+                if (con.value.compare(new Fraction(0)) != 0) {
+                    result += '\\[';
+                    result += '(p_' + (conIndex + 1) + ') \\quad ';
+                    result += '\\boxed{';
+                    result += con.toLatex(true);
+                    result += '}';
+                    result += '\\]';
+                }
+                return result;
+            }
+
+            result += '\\[';
+            result += '(p_' + (conIndex + 1) + ') \\quad ';
+            result += con.toLatex(true);
             result += '\\]';
+
+            result += '\\[';
+            result += this._prefixToLtex(keys[0]);
+            result += ' = ';
+            result += '\\frac{' + con.value.toLatex() + '}' + '{' + con.prefix[keys[0]].toLatex() + '}';
+            result += '\\]';
+
+            let val = con.value.clone();
+            val.divide(con.prefix[keys[0]]);
+            result += '\\[';
+            result += '\\boxed{';
+            result += this._prefixToLtex(keys[0]);
+            result += ' = ';
+            result += val.toLatex();
+            result += '}';
+            result += '\\]';
+        } else {
+            result += '\\[';
+            result += '(p_' + (conIndex + 1) + ') \\quad ';
+            result += con.toLatex(true);
+            result += '\\]';
+            for (let i = keys.length - 1; i >= 0; i--) {
+                result += 'Presek sa \\(' + this._prefixToLtex(keys[1 - i]) + '\\) osom:';
+                result += '\\[';
+                result += this._prefixToLtex(keys[i]);
+                result += ' = ';
+                result += '0';
+                result += '\\]';
+
+                let prefix = null;
+                let val = con.value.clone();
+                let step2 = '';
+
+                result += '\\[';
+                for (let j = 0; j < keys.length; j++) {
+                    if (j > 0 && con.prefix[keys[j]].sign() > 0) {
+                        result += '+';
+                    }
+                    if (i == j || con.prefix[keys[j]].compare(new Fraction(1)) != 0) {
+                        result += con.prefix[keys[j]].toLatex();
+                    }
+
+                    if (j == i) {
+                        result += ' \\cdot ';
+                        result += '0';
+                    } else {
+                        result += this._prefixToLtex(keys[j]);
+                        if (con.prefix[keys[j]].compare(new Fraction(1)) != 0) {
+                            prefix = con.prefix[keys[j]].clone();
+                        }
+
+                        if (step2.length > 0 && con.prefix[keys[j]].sign() > 0) {
+                            result += '+';
+                        }
+                        if (con.prefix[keys[j]].compare(new Fraction(1)) == 0) {
+                            step2 += '\\boxed{';
+                        } else {
+                            step2 += con.prefix[keys[j]];
+                        }
+                        step2 += this._prefixToLtex(keys[j]);
+                    }
+                }
+
+                step2 += ' = ';
+                step2 += con.value.toLatex();
+                if (!prefix) {
+                    step2 += '}';
+                }
+
+                result += ' = ';
+                result += con.value.toLatex();
+                result += '\\]';
+
+                result += '\\[' + step2 + '\\]';
+
+                if (prefix) {
+                    result += '\\[';
+                    result += this._prefixToLtex(keys[1 - i]);
+                    result += ' = ';
+                    result += '\\frac{' + val.toLatex() + '}{' + prefix.toLatex() + '}';
+                    result += '\\]';
+
+                    val.divide(prefix);
+                    result += '\\[';
+                    result += '\\boxed{';
+                    result += this._prefixToLtex(keys[1 - i]);
+                    result += ' = ';
+                    result += val.toLatex();
+                    result += '}';
+                    result += '\\]';
+                }
+            }
+        }
+
+        return result;
+    }
+
+    _prefixToLtex(prefix) {
+        let result = '';
+
+        if (prefix.length == 0) {
+            return result;
+        }
+
+        result += prefix[0];
+        if (prefix.length > 0) {
+            result += '_{';
+            result += prefix.substr(1);
+            result += '}';
         }
 
         return result;
@@ -292,6 +457,7 @@ class LinearProgramminSolver {
 
         let keys = Object.keys(func.prefix);
 
+        let first = true;
         for (let i = 0; i < conditions.length; i++) {
             for (let j = i + 1; j < conditions.length; j++) {
                 if (Object.keys(conditions[i].prefix).length < 2 && Object.keys(conditions[j].prefix).length < 2) {
@@ -413,6 +579,11 @@ class LinearProgramminSolver {
                         if (ok) {
                             this.points.push(tmp);
                             this.graph.create('point', p, { name: getAlphabet(this.pointName), size: 2 });
+                            if (!first) {
+                                result += '<hr />';
+                            } else {
+                                first = false;
+                            }
                             result += step;
                             this.pointName++;
                         }
@@ -472,7 +643,7 @@ class LinearProgramminSolver {
 
             result += '\\[';
             result += '(p_' + (con1Index + 1) + ')\\quad ';
-            result += con1.toLatex();
+            result += con1.toLatex(true);
             result += ' / ';
             result += ' \\cdot ';
             let parenthases = false;
@@ -489,7 +660,7 @@ class LinearProgramminSolver {
 
             result += '\\[';
             result += '(p_' + (con2Index + 1) + ')\\quad ';
-            result += con2.toLatex();
+            result += con2.toLatex(true);
             result += '\\]';
 
             let tmp = con1.clone();
@@ -503,7 +674,7 @@ class LinearProgramminSolver {
         } else {
             result += '(p_' + (con1Index + 1) + ')\\quad ';
         }
-        result += con1.toLatex();
+        result += con1.toLatex(true);
         result += ' \\implies ';
 
         if (reverse) {
@@ -518,17 +689,17 @@ class LinearProgramminSolver {
             }
             con1.value.subtract(prefix);
 
-            result += keys[1];
+            result += this._prefixToLtex(keys[1]);
             result += ' = ';
             result += con1.value.toLatex();
 
             if (con1.prefix[keys[1]].numerator != 1 || con1.prefix[keys[1]].sign() < 0) {
                 result += ' \\implies ';
-                result += keys[1];
+                result += this._prefixToLtex(keys[1]);
                 result += ' = ';
                 result += '\\frac{' + con1.value.toLatex() + '}{' + con1.prefix[keys[1]].toLatex() + '}';
                 result += ' \\implies ';
-                result += keys[1];
+                result += this._prefixToLtex(keys[1]);
                 result += ' = ';
                 con1.value.divide(con1.prefix[keys[1]].clone());
                 result += con1.value.toLatex();
@@ -545,17 +716,17 @@ class LinearProgramminSolver {
             }
             con1.value.subtract(prefix);
 
-            result += keys[0];
+            result += this._prefixToLtex(keys[0]);
             result += ' = ';
             result += con1.value.toLatex();
 
             if (con1.prefix[keys[0]] != 1 || con1.prefix[keys[0]].sign() < 0) {
                 result += ' \\implies ';
-                result += keys[0];
+                result += this._prefixToLtex(keys[0]);
                 result += ' = ';
                 result += '\\frac{' + con1.value.toLatex() + '}{' + con1.prefix[keys[0]].toLatex() + '}';
                 result += ' \\implies ';
-                result += keys[0];
+                result += this._prefixToLtex(keys[0]);
                 result += ' = ';
                 con1.value.divide(con1.prefix[keys[0]]);
                 result += con1.value.toLatex();
@@ -569,15 +740,15 @@ class LinearProgramminSolver {
         } else {
             result += '(p_' + (con2Index + 1) + ')\\quad ';
         }
-        result += con2.toLatex();
+        result += con2.toLatex(true);
         if (reverse) {
             if (con2.prefix[keys[0]].numerator != 1 || con2.prefix[keys[0]].sign() < 0) {
                 result += ' \\implies ';
-                result += keys[0];
+                result += this._prefixToLtex(keys[0]);
                 result += ' = ';
                 result += '\\frac{' + con2.value.toLatex() + '}{' + con2.prefix[keys[0]].toLatex() + '}';
                 result += ' \\implies ';
-                result += keys[0];
+                result += this._prefixToLtex(keys[0]);
                 result += ' = ';
                 con2.value.divide(con2.prefix[keys[0]]);
                 result += con2.value.toLatex();
@@ -585,11 +756,11 @@ class LinearProgramminSolver {
         } else {
             if (con2.prefix[keys[1]].numerator != 1 || con2.prefix[keys[1]].sign() < 0) {
                 result += ' \\implies ';
-                result += keys[1];
+                result += this._prefixToLtex(keys[1]);
                 result += ' = ';
                 result += '\\frac{' + con2.value.toLatex() + '}{' + con2.prefix[keys[1]].toLatex() + '}';
                 result += ' \\implies ';
-                result += keys[1];
+                result += this._prefixToLtex(keys[1]);
                 result += ' = ';
                 con2.value.divide(con2.prefix[keys[1]]);
                 result += con2.value.toLatex();
@@ -641,7 +812,7 @@ class LinearProgramminSolver {
             let z = func.calc(this.points[i].coords);
 
             result += '\\[';
-            result += '\\{' + this.points[i].name + '\\}';
+            result += this.points[i].name + '(' + this.points[i].coords[keys[0]] + ', ' + this.points[i].coords[keys[1]] + ')';
             result += '\\]';
 
             result += '\\[';
@@ -694,6 +865,10 @@ class LinearProgramminSolver {
                 result += '}';
             }
             result += '\\]';
+
+            if (i < this.points.length - 1) {
+                result += '<hr />';
+            }
         }
 
         return result;
@@ -736,21 +911,10 @@ class LinearProgramminSolver {
 
         let keys = Object.keys(func.prefix);
 
-        let boundingBox = [ -5, 0, 0, -5 ];
-
         for (let i = 0; i < this.points.length; i++) {
             p.push([]);
             p[i].push(this.points[i].coords[keys[0]].numerator / this.points[i].coords[keys[0]].denominator);
             p[i].push(this.points[i].coords[keys[1]].numerator / this.points[i].coords[keys[1]].denominator);
-
-            if (p[i][0] > boundingBox[2] * 1.25) {
-                boundingBox[0] = -p[i][0] * 0.25;
-                boundingBox[2] = p[i][0] + p[i][0] * 0.25;
-            }
-            if (p[i][1] > boundingBox[1] * 1.25) {
-                boundingBox[3] = -p[i][1] * 0.25;
-                boundingBox[1] = p[i][1] + p[i][1] * 0.25;
-            }
 
             if (i == 0) {
                 p0.push(p[i][0]);
@@ -770,8 +934,6 @@ class LinearProgramminSolver {
                 }
             }
         }
-
-        this.graph.setBoundingBox(boundingBox);
 
         p.sort((a, b) => {
             let left = (a[0] - p0[0]) * (b[1] - p0[1]) - (b[0] - p0[0]) * (a[1] - p0[1]);
