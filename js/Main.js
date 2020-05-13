@@ -19,12 +19,22 @@
  * Main
  */
 
+function dumpLatex(latex) {
+    let tmp = latex.split('\\]').join('\\]<br />');
+    tmp = tmp.split('<hr />').join('\\begin{center}<br />\\line(1, 0){450}\\\\[1mm]<br />\\end{center}<br />');
+
+    let newWindow = window.open();
+    newWindow.document.write(tmp);
+}
+
 function renderEquationsSystem(latex) {
     $('#equationsLatex').empty();
     $('#equationsLatex').html(latex);
     MathJax.texReset();
     MathJax.typesetClear();
     MathJax.typesetPromise();
+
+    dumpLatex(latex);
 }
 
 function renderLinearProgramming(latex, index) {
@@ -33,6 +43,8 @@ function renderLinearProgramming(latex, index) {
     MathJax.texReset();
     MathJax.typesetClear();
     MathJax.typesetPromise();
+
+    dumpLatex(latex);
 }
 
 (() => {
@@ -92,7 +104,7 @@ function renderLinearProgramming(latex, index) {
 
         $('#linearProgrammingGraph').addClass('visible');
         let graph = JXG.JSXGraph.initBoard('linearProgrammingGraph', {
-            boundingbox: [ -5, 100, 100, -5 ],
+            boundingbox: [-5, 100, 100, -5],
             axis: true,
             zoom: {
                 factorX: 1.25,
