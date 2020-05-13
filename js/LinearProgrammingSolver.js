@@ -377,7 +377,11 @@ class LinearProgramminSolver {
                         result += '+';
                     }
                     if (i == j || con.prefix[keys[j]].compare(new Fraction(1)) != 0) {
-                        result += con.prefix[keys[j]].toLatex();
+                        if (i != j && con.prefix[keys[j]].compare(new Fraction(-1)) == 0) {
+                            result += '-';
+                        } else {
+                            result += con.prefix[keys[j]].toLatex();
+                        }
                     }
 
                     if (j == i) {
@@ -395,7 +399,11 @@ class LinearProgramminSolver {
                         if (con.prefix[keys[j]].compare(new Fraction(1)) == 0) {
                             step2 += '\\boxed{';
                         } else {
-                            step2 += con.prefix[keys[j]];
+                            if (con.prefix[keys[j]].compare(new Fraction(-1)) == 0) {
+                                step2 += '-';
+                            } else {
+                                step2 += con.prefix[keys[j]];
+                            }
                         }
                         step2 += this._prefixToLtex(keys[j]);
                     }
@@ -682,7 +690,27 @@ class LinearProgramminSolver {
             tmp.divide(con2.prefix[keys[0]].clone());
 
             let prefix = con1.prefix[keys[0]].clone();
+            result += prefix.toLatex();
+            result += ' \\cdot ';
+            result += tmp.value.toLatex();
             prefix.multiply(tmp.value);
+
+            if (con1.prefix[keys[1]].compare(new Fraction(1)) == 0) {
+                result += '+';
+            } else if (con1.prefix[keys[1]].compare(new Fraction(-1)) == 0) {
+                result += '-';
+            } else if (con1.prefix[keys[1]].sign() > 0) {
+                result += '+';
+                result += con1.prefix[keys[1]].toLatex();
+            } else {
+                result += con1.prefix[keys[1]].toLatex();
+            }
+            result += this._prefixToLtex(keys[1]);
+
+            result += ' = ';
+            result += con1.value.toLatex();
+
+            result += ' \\implies ';
 
             if (con1.prefix[keys[1]].numerator != 1) {
                 result += con1.prefix[keys[1]].toLatex();
@@ -693,7 +721,7 @@ class LinearProgramminSolver {
             result += ' = ';
             result += con1.value.toLatex();
 
-            if (con1.prefix[keys[1]].numerator != 1 || con1.prefix[keys[1]].sign() < 0) {
+            if (con1.prefix[keys[1]].compare(new Fraction(1)) != 0 || con1.prefix[keys[1]].sign() < 0) {
                 result += ' \\implies ';
                 result += this._prefixToLtex(keys[1]);
                 result += ' = ';
@@ -709,6 +737,26 @@ class LinearProgramminSolver {
             tmp.divide(con2.prefix[keys[1]].clone());
 
             let prefix = con1.prefix[keys[1]].clone();
+
+            if (con1.prefix[keys[0]].compare(new Fraction(-1)) == 0) {
+                result += '-';
+            } else if (con1.prefix[keys[0]].compare(new Fraction(1)) != 0) {
+                result += con1.prefix[keys[0]].toLatex();
+            }
+            result += this._prefixToLtex(keys[0]);
+
+            if (prefix.sign() > 0) {
+                result += '+';
+            }
+            result += prefix.toLatex();
+            result += ' \\cdot ';
+            result += tmp.value.toLatex();
+
+            result += ' = ';
+            result += con1.value.toLatex();
+
+            result += ' \\implies ';
+
             prefix.multiply(tmp.value);
 
             if (con1.prefix[keys[0]].numerator != 1) {
